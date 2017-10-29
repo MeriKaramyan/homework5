@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style >
+		#canvas {
+            border: dashed 5px #373737;
+            }        }
+	</style>
+	<title>Homework5</title>
+</head>
+<body>
+
+<canvas id= "canvas" width="1000" height="600"></canvas>
+    <script type="text/javascript">
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext("2d");
+
+        const backgroundImage = new Image();
+        backgroundImage.src = "bg3.jpg";
+
+        const rand = function(num) {
+            return Math.floor(Math.random() * num) + 1;
+        };
+        const brideImg = new Image();
+        brideImg.src = "bride.png";
+       
+        const gameData = {
+        	groom: {
+            x: 0,
+            y: canvas.height-85,
+            width: 70,
+            height: 85,
+            xDelta: 1,
+            yDelta: 1
+        },
+        brides: [],
+        gameOver: false,
+        }
+
+        const groom = gameData.groom;
+      
+        const checkCollide = function(obj1, obj2) {
+            return obj1.x < obj2.x + obj2.width && obj1.x + obj1.width > obj2.x && obj1.y < obj2.y + obj2.height && obj1.y + obj1.height > obj2.y
+        }
+
+        const updateData = function() {
+
+            const help = function(point) {
+                if (point.x + point.width >= canvas.width || point.x <= 0) {
+                    point.xDelta = -point.xDelta;
+                }
+                if (point.y + point.height >= canvas.height || point.y <= 0) {
+                    point.yDelta = -point.yDelta;
+                }
+                if (checkCollide(point, groom)) {
+                  alert("Game Over pres F5 and start again");
+                  gameData.gameOver = true;
+                }
+                point.x = point.x + point.xDelta;
+                point.y = point.y + point.yDelta;
+            }
+
+            forEach(gameData.brides, help);
+        }
+
+        const draw = function() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+   
+            const drawBrides = function(pt) {
+                ctx.drawImage(brideImg, pt.x, pt.y, pt.width, pt.height);
+            }
+            ctx.drawImage(gromImg, groom.x, groom.y, groom.width, groom.height);
+            forEach(gameData.brides, drawBrides);
+        }
+
+        const createBrides = function(count, canvasWidth, canvasHeight) {
+            const helper = function(n) {
+                if (n <= 0) {
+                    return ""
+                }
+				const x = rand(canvasWidth - 70);
+				const y = rand(canvasHeight - 85);
+				const brideObj = {
+                    x: x,
+                    y: y,
+                    width: 70,
+                    height: 85,
+                    yDelta: 1,
+                    xDelta: 1
+                }
+				if (!checkCollide(brideObj, groom)) {
+					gameData.brides.push(brideObj);
+					helper(n - 1)
+				} else {
+					helper(n);
+				}
+            };
+            helper(count);
+        };
+
+		setInterval(function() {
+		  createBrides(1, canvas.width, canvas.height);
+		}, 3000);
+
+        gromImg = new Image();
+        gromImg.src = "groom2.png";
+
+        createBrides(5, canvas.width, canvas.height);
+
+        const forEach = function(arr, f) {
+            const helper = function(n) {
+                if (n === arr.length)
+                    return;
+
+                f(arr[n]);
+                helper(n + 1);
+            };
+            helper(0);
+        };
+        
+        document.addEventListener('keydown', function(event) {
+            if (event.keyCode === 37 && groom.x >= 0) {
+                groom.x -= 10;
+            } else if (event.keyCode === 38 && groom.y >= 0) {
+                groom.y -= 10;
+            } else if (event.keyCode === 39 && groom.x + groom.width <= canvas.width) {
+                groom.x += 10;
+            } else if (event.keyCode === 40 && groom.y + groom.height <= canvas.height) {
+                groom.y += 10;
+            }
+        });
+
+        const loop = function() {
+        	if (gameData.gameOver) {return}
+            draw();
+            updateData();
+
+            requestAnimationFrame(loop);
+        }
+
+        loop();
+    </script>
+</body>
+ 
+</html>
+

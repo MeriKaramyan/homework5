@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Homework5</title>
+	<style>
+		#canvas {
+			border: dashed 5px #373737;
+      background: #ffc501;
+		}
+	</style>
+</head>
+<body>
+<canvas id="canvas" width="1000" height="500"></canvas>
+<script>
+	 const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext("2d");
+      
+      const rand = function(num) {
+        return Math.floor(Math.random() * num) + 1;
+      };
+      
+      const bunchOfColors = [
+        '#CC4A14', '#99583D', '#FF0000', '#40FF40', '#54CC14','#CC4A14','#99583D', '#FF0000', '#40FF40', '#54CC14'
+      ];
+      
+      const createPoints = function(count, canvasWidth, canvasHeight){
+        
+        const points = [];
+        
+        
+        
+        const someArr = function(num){
+          if (num < 1) {return ""}
+          
+          
+          points.push({
+            x: rand(canvasWidth - 15),
+            y: rand(canvasHeight - 15),
+            width: 15,
+            height: 15,
+            yDelta: 3,
+            xDelta: 3,
+            color: bunchOfColors[rand(10)-1]
+          });
+          someArr(num - 1);
+        };
+        
+        someArr(count);
+        return points;
+      };
+      
+
+      const particles = createPoints(5000, canvas.width, canvas.height);
+      
+      const forEach = function(arr, f) {
+        const helper = function(n) {
+          if(n === arr.length)
+            return;
+          
+          f(arr[n]);
+          helper(n + 1);
+        };
+        helper(0);
+      };
+      
+      const draw = function(){
+      	ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const drawParticle = function(num){
+          
+          ctx.fillStyle = num.color;
+          ctx.fillRect(num.x, num.y, num.width, num.height);
+        }
+        
+        forEach(particles, drawParticle);
+      }
+      
+      const updateData = function(){
+        
+        const help = function(point){
+          if (point.x + point.width >= canvas.width || point.x <= 0) {
+            point.xDelta = -point.xDelta;
+            point.color = bunchOfColors[rand(5) - 1]
+          }
+          if (point.y + point.height >= canvas.height || point.y <= 0) {
+            point.yDelta = -point.yDelta;
+            point.color = bunchOfColors[rand(5) - 1]
+          }
+          
+          
+          
+          point.x = point.x + point.xDelta;
+          point.y = point.y + point.yDelta;
+        }
+        
+        forEach(particles, help);
+      }
+      
+      const loop = function(){
+        draw();
+        updateData();
+        
+        requestAnimationFrame(loop);
+      }
+      
+      loop();
+</script>
+</body>
+</html>
